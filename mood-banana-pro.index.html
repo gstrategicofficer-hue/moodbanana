@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mood Banana · MVP</title>
+  <meta name="description" content="写下心情 → 收到搞笑+毒鸡汤的鼓励。Mood Banana，一个轻量的情绪教练 MVP。">
+  <style>
+    :root{
+      --banana:#FFD93D;
+      --banana-dark:#F4C531;
+      --ink:#222;
+      --muted:#666;
+      --bg:#fffdf5;
+      --card:#ffffff;
+      --ok:#21b66f;
+      --border:rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0; padding:0}
+    body{
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color:var(--ink);
+      background:linear-gradient(180deg,var(--bg),#fff);
+    }
+    a{color:inherit}
+    header{
+      position:sticky; top:0; z-index:10;
+      background:rgba(255,255,255,.86);
+      backdrop-filter:saturate(160%) blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .container{max-width:980px; margin:0 auto; padding:0 16px}
+    .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
+    .logo{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.3px}
+    .logo-badge{
+      width:34px; height:34px; border-radius:9px;
+      display:grid; place-items:center; font-size:18px;
+      background:var(--banana); color:#000; font-weight:900;
+      box-shadow:0 6px 20px rgba(244,197,49,.45);
+    }
+    .hero{display:grid; grid-template-columns:1.15fr .85fr; gap:28px; padding:34px 0 12px}
+    @media (max-width:880px){ .hero{grid-template-columns:1fr} }
+    h1{font-size:34px; line-height:1.15; margin:6px 0 8px}
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      background:var(--banana); color:#000; padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px;
+      box-shadow:0 6px 16px rgba(244,197,49,.35);
+    }
+    .sub{color:var(--muted); margin:6px 0 0}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.04)}
+    .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .form-grid .full{grid-column:1/-1}
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+    input, textarea, select, button{
+      width:100%; border:1px solid rgba(0,0,0,.12); border-radius:10px; padding:12px 12px; font-size:14px; background:#fff;
+    }
+    textarea{min-height:96px; resize:vertical}
+    .btn{
+      background:#000; color:#fff; border:none; cursor:pointer; font-weight:700;
+    }
+    .btn-cta{background:var(--banana-dark); color:#000; border:none}
+    .btn:disabled{opacity:.5; cursor:not-allowed}
+    .hint{font-size:12px; color:var(--muted)}
+    .two-col{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    @media (max-width:880px){ .two-col{grid-template-columns:1fr} }
+    .reply{
+      font-size:18px; line-height:1.55;
+      background:linear-gradient(0deg,#fff, #fff7d8);
+      border:1px dashed rgba(0,0,0,.14);
+      border-radius:14px; padding:16px;
+    }
+    .kpi{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px}
+    .kpi .pill{background:#f2f2f2; border-radius:999px; padding:6px 10px; font-size:12px; color:#333}
+    footer{padding:40px 0 60px; color:#777; font-size:13px; text-align:center}
+    .gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+    .empty{
+      display:grid; place-items:center; color:#999; border:1px dashed rgba(0,0,0,.12); border-radius:12px; height:120px; background:#fff
+    }
+    .success{
+      display:none; margin-top:8px; font-size:12px; color:var(--ok);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="logo">
+        <div class="logo-badge">🍌</div>
+        <div>Mood Banana</div>
+      </div>
+      <div style="display:flex; gap:14px">
+        <a href="#" class="tag">MVP · Beta</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="tag">写下心情 → 收到毒鸡汤⚡</span>
+        <h1>每天一句搞笑鼓励，<br>把坏心情揉成香蕉泥。</h1>
+        <p class="sub">输入心情，点击生成。系统会回一条 <b>短小、有梗、想分享</b> 的中英双语文案。</p>
+        <div class="kpi">
+          <div class="pill">双语回复</div>
+          <div class="pill">支持邮件</div>
+          <div class="pill">后续可生成海报图</div>
+        </div>
+      </div>
+      <div class="card">
+        <form id="moodForm">
+          <div class="form-grid">
+            <div>
+              <label>Email（必填）</label>
+              <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+            <div>
+              <label>User ID（可选）</label>
+              <input type="text" id="user_id" placeholder="banana_lover">
+            </div>
+            <div>
+              <label>Mood Title（可选）</label>
+              <input type="text" id="title" placeholder="比如：加班夜">
+            </div>
+            <div class="full">
+              <label>Mood Today（必填）</label>
+              <textarea id="text" placeholder="今天的心情…" required></textarea>
+              <div class="hint">提交后约几秒钟会出现 Banana 回复（真实产品由 Make+OpenAI 生成）。</div>
+            </div>
+            <div class="full">
+              <button class="btn btn-cta" type="submit">🍌 Generate</button>
+              <div id="ok" class="success">已提交！请稍等，Banana 正在回你～</div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="two-col" style="margin:22px 0 8px">
+      <div class="card">
+        <h3 style="margin:0 0 10px">Banana 回复</h3>
+        <div id="reply" class="reply">（这里将显示中英双语的毒鸡汤回复…）</div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 10px">预留图片（海报）</h3>
+        <div class="gallery">
+          <div class="empty">image_url 占位</div>
+          <div class="empty">image_url 占位</div>
+          <div class="empty">image_url 占位</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Made with 🍌 · Mood Banana MVP · 这只是前端样例，真实数据由 Google Sheet + Make + OpenAI 提供
+  </footer>
+
+  <script>
+    // ====== 方式 A：纯前端演示（随机示例，便于立即预览） ======
+    const demoSamples = [
+      ["别emo了，连wifi都会断线 🌐","Even Wi‑Fi drops sometimes, you’ll reconnect 📶"],
+      ["爆炸也好，总比没火花强 🔥","Better explode than stay dull 💥"],
+      ["难过就睡一觉，重启更香 😴","Reboot yourself, sadness will buffer ⏳"],
+      ["别怕慢，香蕉熟了才甜 🍌","Don’t rush, ripe bananas taste best 🍌"]
+    ];
+
+    const form = document.getElementById('moodForm');
+    const reply = document.getElementById('reply');
+    const ok = document.getElementById('ok');
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      ok.style.display = 'block';
+
+      // 展示演示数据（如果你还没接后台，这段能让页面看起来有反馈）
+      const pick = demoSamples[Math.floor(Math.random()*demoSamples.length)];
+      reply.innerHTML = `中文：${pick[0]}<br>English: ${pick[1]}`;
+      reply.scrollIntoView({behavior:'smooth', block:'center'});
+
+      // ====== 方式 B：接入你的 Make Webhook（准备好后把下面的注释取消） ======
+      // try {
+      //   const res = await fetch('https://hook.make.com/xxxxxxxx', {
+      //     method:'POST',
+      //     headers:{'Content-Type':'application/json'},
+      //     body: JSON.stringify({
+      //       email: document.getElementById('email').value.trim(),
+      //       user_id: document.getElementById('user_id').value.trim(),
+      //       title: document.getElementById('title').value.trim(),
+      //       text: document.getElementById('text').value.trim()
+      //     })
+      //   });
+      //   const data = await res.json(); // 让 Make 返回 {reply_cn:'..', reply_en:'..'} 或 {reply:'..'}
+      //   if(data.reply_cn && data.reply_en){
+      //     reply.innerHTML = `中文：${data.reply_cn}<br>English: ${data.reply_en}`;
+      //   }else if(data.reply){
+      //     reply.textContent = data.reply;
+      //   }else{
+      //     reply.textContent = '已提交，稍等片刻刷新查看～';
+      //   }
+      // } catch(err){
+      //   console.error(err);
+      //   reply.textContent = '网络打了个盹儿，再试一次～';
+      // }
+    });
+  </script>
+</body>
+</html>
